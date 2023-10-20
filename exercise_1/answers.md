@@ -1,8 +1,5 @@
 ## General questions
-### 1. Explain the different parts required when building a data
-pipeline. Give examples of tools for each stage (if relevant
-to your experience describe GCP tools or other Cloud
-platform)
+### 1. Explain the different parts required when building a data pipeline. Give examples of tools for each stage (if relevant to your experience describe GCP tools or other Cloud platform)
 
 Building a data pipeline involves several stages, each with its own set of components and tools to process and move data from source to destination. Data pipelines are essential for ETL/ELT (Extract, Transform, Load) processes, data integration, and data analytics. Here are the different parts of a data pipeline and examples of tools for each stage:
 
