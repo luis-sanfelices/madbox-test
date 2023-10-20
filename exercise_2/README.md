@@ -1,1 +1,3 @@
-Troubleshooting
+This folder contains the python related exercise. 
+
+For development pyspark with spark container have been choosen. I used PySpark due to its scalability and distributed data processing capabilities. It performs well with large datasets and provides efficient data transformation and aggregation. Its integration with the Python ecosystem, performance optimizations, and support for big data tools make it a practical choice. However, I have in mind than  the existing technology stack in Madbox, and the skills of your data engineering and data analysis teams suits better with a dataflow solution, but since I'am no very familiar with it I decided to move to the stack where I fill more confortable.
