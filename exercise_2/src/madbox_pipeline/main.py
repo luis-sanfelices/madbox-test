@@ -1,18 +1,21 @@
 import sys
 sys.path.append("src")
-from utils import get_spark_context
+from utils import get_spark_context, extract_csv_data, write_csv_data
+from transform import madbox_transformation
 
-def _extract_csv_data(spark, path: str):
-  """ function for extracting data from csv """
-  df = spark.read.option("header",True) \
-            .option("inferSchema", True) \
-            .option("delimiter",",") \
-    .csv("/tmp/resources/zipcodes.csv")
-  return df
 
 if __name__ == "__main__":
 
-    # Regular Spark job executed on a Docker container
-    spark = get_spark_context("employees")
-    df = _extract_csv_data(spark, "" )
-    spark.stop()
+  """ get spark context from master """
+  spark = get_spark_context("madbox")
+
+  """ extract data """
+  events_df = extract_csv_data(spark,  ";", "./input_data/events.csv" )
+  
+  """ process and transform data """
+  df = madbox_transformation(events_df)
+
+  """ load data """
+  write_csv_data(df, path="./output_data")
+
+  spark.stop()

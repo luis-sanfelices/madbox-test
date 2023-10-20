@@ -1,8 +1,7 @@
 import os
-
 from pyspark.conf import SparkConf
 from pyspark.sql import SparkSession
-import logging
+
 
 
 def get_spark_context(app_name: str) -> SparkSession:
@@ -17,7 +16,7 @@ def get_spark_context(app_name: str) -> SparkSession:
         [
             (
                 "spark.master",
-                os.environ.get("SPARK_MASTER_URL", " spark://5c5bcb268419:7077"),
+                os.environ.get("SPARK_MASTER_URL", " spark://spark-master:7077"),
             ),
             ("spark.driver.host", os.environ.get("SPARK_DRIVER_HOST", "local[*]")),
             ("spark.submit.deployMode", "client"),
@@ -28,25 +27,16 @@ def get_spark_context(app_name: str) -> SparkSession:
 
     return SparkSession.builder.config(conf=conf).getOrCreate()
 
+def extract_csv_data(spark, delimiter, path: str) -> object:
+  """ function for extracting from csv to spark dataframe """
 
-def init_logger(level=logging.INFO):
-    logger = logging.getLogger()
-    logging.captureWarnings(True)
+  df = spark.read.option("header",True) \
+                 .option("inferSchema", True) \
+                 .option("delimiter", delimiter) \
+            .csv(path)
+  return df
 
-    stream_handler = logging.StreamHandler()
-    logger.addHandler(stream_handler)
-
-    format_str = "%(asctime)s - %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
-    date_format = "%Y-%m-%d %H:%M:%S"
-
-    formatter = logging.Formatter(format_str, date_format)
-    stream_handler.setFormatter(formatter)
-
-    logger.setLevel(level)
-
-    if logger.hasHandlers():
-        logger.handlers.clear()
-
-    logger.addHandler(stream_handler)
-
-    return logger
+def write_csv_data(df, path: str, partition_number = 1) -> None:
+   """ write spark dataframe to csv """
+   
+   df.coalesce(partition_number).write.csv(path)

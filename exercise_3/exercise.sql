@@ -97,7 +97,24 @@ SELECT product_id
 FROM madbox.devices
 GROUP BY product_id
 
-### To be honest, utilizing 'pivot' for this problem seems unconventional and doesn't align with the typical use case for 'pivot'.
+### To be honest, utilizing pivot for this problem seems an overengineered solution and does not align with the typical use case for pivot, but using it will be something like this.
+
+SELECT 
+        product_id,
+        has_idfa,
+        no_idfa,
+        has_idfa / (has_idfa + no_idfa) AS has_idfa_pct
+FROM (
+    product_id
+     , (CASE WHEN idfa IS NULL THEN 'no_idfa' ELSE 'has_idfa' END) idfa
+FROM madbox.devices
+) as s
+PIVOT
+(
+    count(product_id)
+    FOR [idfa] IN ('no_idfa' , 'has_idfa')
+)AS pvt
+
 
 /*
 Write a query that creates a ‘daily_user_activity’ table which is
@@ -143,7 +160,8 @@ WITH sessions AS (
 SELECT u.user_id,
        u.first_install_date AS install_date,
        datediff(coalesce(s.session_date, date('${execution_date}') - INTERVAL 1 DAY), u.first_install_date) AS days_since_install,
-       IF(s.user_id IS NOT NULL, TRUE, FALSE) AS has_session
+       IF(s.user_id IS NOT NULL, TRUE, FALSE) AS has_session,
+       coalesce(s.session_date, date('${execution_date}') - INTERVAL 1 DAY) as date
 FROM madbox.users u
     LEFT JOIN sessions s USING(user_id)
 WHERE u.first_install_date < date('${execution_date}');
